@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "main": "index.js",
+  "dependencies": {
+    "@graffiticode/compiler-framework": "file:../.."
+  },
+  "scripts": {
+    "start": "compiler-framework --source . --target compiler"
+  }
+}

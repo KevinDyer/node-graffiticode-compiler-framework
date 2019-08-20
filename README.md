@@ -1,53 +1,77 @@
-# New Project Template
+Compiler Framework
+---
+An open source framework for writing [graffiticode](https://graffiticode.com) compilers.
 
-This repository contains a template you can use to seed a repository for a
-new open source project.
+The framework allows you to go from:
 
-See go/releasing (available externally at
-https://opensource.google.com/docs/releasing/) for more information about
-releasing a new Google open source project.
-
-This template uses the Apache license, as is Google's default.  See the
-documentation for instructions on using alternate license.
-
-## How to use this template
-
-1. Check it out from GitHub.
-    * There is no reason to fork it.
-1. Create a new local repository and copy the files from this repo into it.
-1. Modify README.md and CONTRIBUTING.md to represent your project, not the
-   template project.
-1. Develop your new project!
-
-``` shell
-git clone https://github.com/google/new-project
-mkdir my-new-thing
-cd my-new-thing
-git init
-cp ../new-project/* .
-git add *
-git commit -a -m 'Boilerplate for new Google open source project'
+```js
+exports.compiler = {
+  language: 'L0',
+  async compile(code, data, config) {
+      return '<code+data+config>';
+  },
+};
 ```
 
-## Source Code Headers
+To:
 
-Every file containing source code must include copyright and license
-information. This includes any JS/CSS files that you might be serving out to
-browsers. (This is to help well-intentioned people avoid accidental copying that
-doesn't comply with the license.)
+```sh
+curl http://my-url
+# Output: Hello, L0!
+```
+All without needing to worry about writing an HTTP server or complicated request
+handling logic.
 
-Apache header:
+# Installation
+Add the Compiler Framework to your `package.json` file using `npm`.
+``` sh
+npm install @graffiticode/compiler-framework
+```
 
-    Copyright 2019 Google LLC
+# Quickstart
+Create an `index.js` file with the following contents:
+``` js
+exports.compiler = {
+  language: 'L0',
+  async compile(code, data, config) {
+      return '<code+data+config>';
+  },
+};
+```
 
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
+Run the following command:
+```sh
+npx @graffiticode/compiler-framework --target=compiler
+```
 
-        https://www.apache.org/licenses/LICENSE-2.0
+# Configure the Compiler Framework
 
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+You can configure the Compiler Framework using command-line flags or
+environment variables. If you specify both, the environment variable will be
+ignored.
+
+Command-line flag         | Environment variable      | Description
+------------------------- | ------------------------- | -----------
+`--port`                  | `PORT`                    | The port on which the Compiler Framework listens for requests. Default: `8080`
+`--target`                | `FUNCTION_TARGET`         | The name of the exported function to be invoked in response to requests. Default: `compiler`
+`--source`                | `FUNCTION_SOURCE`         | The path of your project directory where you want to start. Compiler framework always look only at root path, setting this option will look for your function in any other folder. Default: `/`
+
+You can set command-line flags in your `package.json` via the `start` script.
+For example:
+
+```js
+  "scripts": {
+    "start": "compiler-framework --target=compiler"
+  }
+```
+
+# [wip] Advanced Docs
+
+More advanced guides and docs can be found in the [`docs/` folder](docs/).
+
+# Contributing
+
+Contributions to this library are welcome and encouraged. See
+[CONTRIBUTING](CONTRIBUTING.md) for more information on how to get started.
+
+__NOTE__: _This is not an officially supported Google product._

@@ -1,7 +1,7 @@
 {
-  "name": "@graffiticode/compiler-framework",
+  "name": "@graffiticode/graffiticode-compiler-framework",
   "version": "0.0.1",
-  "repository": "https://github.com/graffiticode/node-compiler-framework.git",
+  "repository": "https://github.com/kevindyer/node-graffiticode-compiler-framework.git",
   "main": "build/src/index.js",
   "types": "build/src/invoker.d.ts",
   "dependencies": {
@@ -23,7 +23,7 @@
     "build/src/*.d.ts"
   ],
   "bin": {
-    "compiler-framework": "./build/src/index.js"
+    "graffiticode-compiler-framework": "./build/src/index.js"
   },
   "author": "Kevin Dyer <kevindy@google.com>",
   "license": "Apache-2.0",

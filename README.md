@@ -1,4 +1,4 @@
-Compiler Framework
+Graffiticode Compiler Framework
 ---
 An open source framework for writing [graffiticode](https://graffiticode.com) compilers.
 
@@ -23,9 +23,9 @@ All without needing to worry about writing an HTTP server or complicated request
 handling logic.
 
 # Installation
-Add the Compiler Framework to your `package.json` file using `npm`.
+Add the Graffiticode Compiler Framework to your `package.json` file using `npm`.
 ``` sh
-npm install @graffiticode/compiler-framework
+npm install @graffiticode/graffiticode-compiler-framework
 ```
 
 # Quickstart
@@ -41,27 +41,27 @@ exports.compiler = {
 
 Run the following command:
 ```sh
-npx @graffiticode/compiler-framework --target=compiler
+npx @graffiticode/graffiticode-compiler-framework --target=compiler
 ```
 
-# Configure the Compiler Framework
+# Configure the Graffiticode Compiler Framework
 
-You can configure the Compiler Framework using command-line flags or
+You can configure the Graffiticode Compiler Framework using command-line flags or
 environment variables. If you specify both, the environment variable will be
 ignored.
 
 Command-line flag         | Environment variable      | Description
 ------------------------- | ------------------------- | -----------
-`--port`                  | `PORT`                    | The port on which the Compiler Framework listens for requests. Default: `8080`
+`--port`                  | `PORT`                    | The port on which the Graffiticode Compiler Framework listens for requests. Default: `8080`
 `--target`                | `FUNCTION_TARGET`         | The name of the exported function to be invoked in response to requests. Default: `compiler`
-`--source`                | `FUNCTION_SOURCE`         | The path of your project directory where you want to start. Compiler framework always look only at root path, setting this option will look for your function in any other folder. Default: `/`
+`--source`                | `FUNCTION_SOURCE`         | The path of your project directory where you want to start. Graffiticode Compiler framework always look only at root path, setting this option will look for your function in any other folder. Default: `/`
 
 You can set command-line flags in your `package.json` via the `start` script.
 For example:
 
 ```js
   "scripts": {
-    "start": "compiler-framework --target=compiler"
+    "start": "graffiticode-compiler-framework --target=compiler"
   }
 ```
 

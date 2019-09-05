@@ -5,6 +5,6 @@
     "@graffiticode/graffiticode-compiler-framework": "file:../.."
   },
   "scripts": {
-    "start": "graffiticode-compiler-framework --source . --target compiler"
+    "start": "graffiticode-compiler-framework --target compiler"
   }
 }

@@ -102,7 +102,7 @@ describe('invoker', () => {
   beforeEach('Start server', done => {
     compiler = new FakeCompiler('LTest');
     server = getServer(compiler);
-    server.listen(0, done);
+    server.listen(0, '0.0.0.0', done);
   });
 
   afterEach('Stop server', done => {

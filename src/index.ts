@@ -14,9 +14,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Compiler, getCompiler, getServer } from './invoker';
+import {
+  Compiler,
+  getCompiler,
+  getServer,
+  AuthError,
+  InvalidArgumentError,
+} from './invoker';
 import * as minimist from 'minimist';
 import { resolve } from 'path';
+
+// Exports
+export { AuthError, InvalidArgumentError };
 
 // Supported command-line flags
 const FLAG = {

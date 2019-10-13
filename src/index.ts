@@ -57,17 +57,19 @@ const CODE_LOCATION = resolve(
 const PORT = argv[FLAG.PORT] || process.env[ENV.PORT] || '8080';
 const TARGET = argv[FLAG.TARGET] || process.env[ENV.TARGET] || 'target';
 
-const compiler = getCompiler(CODE_LOCATION, TARGET) as Compiler;
-if (!compiler) {
-  console.error('Could not load the compiler, shutting down.');
-  process.exit(1);
-}
-
-const server = getServer(compiler);
-server.listen(PORT, () => {
-  if (process.env.NODE_ENV !== NodeEnv.PRODUCTION) {
-    console.log(`Serving compiler ${compiler.language}...`);
-    console.log(`Compiler: ${TARGET}`);
-    console.log(`URL: http://localhost:${PORT}/`);
+if (!module.parent) {
+  const compiler = getCompiler(CODE_LOCATION, TARGET) as Compiler;
+  if (!compiler) {
+    console.error('Could not load the compiler, shutting down.');
+    process.exit(1);
   }
-});
+
+  const server = getServer(compiler);
+  server.listen(PORT, () => {
+    if (process.env.NODE_ENV !== NodeEnv.PRODUCTION) {
+      console.log(`Serving compiler ${compiler.language}...`);
+      console.log(`Compiler: ${TARGET}`);
+      console.log(`URL: http://localhost:${PORT}/`);
+    }
+  });
+}

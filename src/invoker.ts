@@ -157,12 +157,16 @@ function makeErrorHandler(): express.ErrorRequestHandler {
   };
 }
 
-export function getServer(compiler: Compiler): http.Server {
+export function createApp(compiler: Compiler): express.Application {
   const app = express();
   app.use(express.json({ limit: '50mb' }));
   app.get('/', makeRootHandler(compiler.language));
   app.get('/lang', makeLanguageHandler(compiler.language));
   app.post('/compile', makeCompileHandler(compiler));
   app.use(makeErrorHandler());
-  return http.createServer(app);
+  return app;
+}
+
+export function getServer(compiler: Compiler): http.Server {
+  return http.createServer(createApp(compiler));
 }

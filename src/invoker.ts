@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import * as awsServerlessExpress from 'aws-serverless-express';
+import * as lambda from 'aws-lambda';
 import * as express from 'express';
 import * as http from 'http';
 
@@ -165,6 +167,17 @@ export function createApp(compiler: Compiler): express.Application {
   app.post('/compile', makeCompileHandler(compiler));
   app.use(makeErrorHandler());
   return app;
+}
+
+export function createLambda(compiler: Compiler): lambda.Handler {
+  const app = createApp(compiler);
+  const server = awsServerlessExpress.createServer(app);
+  return function handler(
+    event: lambda.APIGatewayProxyEvent,
+    context: lambda.Context
+  ) {
+    awsServerlessExpress.proxy(server, event, context);
+  };
 }
 
 export function getServer(compiler: Compiler): http.Server {

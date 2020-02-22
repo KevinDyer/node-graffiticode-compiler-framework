@@ -21,12 +21,13 @@ import {
   AuthError,
   InvalidArgumentError,
   createApp,
+  createLambda,
 } from './invoker';
 import * as minimist from 'minimist';
 import { resolve } from 'path';
 
 // Exports
-export { AuthError, InvalidArgumentError, createApp };
+export { AuthError, InvalidArgumentError, createApp, createLambda };
 
 // Supported command-line flags
 const FLAG = {

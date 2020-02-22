@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+const { createLambda } = require('../../');
 
 exports.compiler = {
   language: 'Simple',
@@ -19,3 +20,6 @@ exports.compiler = {
     return null;
   }
 };
+
+// This function can be used to serve a lambda function
+exports.lambdaHandler = createLambda(this.compiler);

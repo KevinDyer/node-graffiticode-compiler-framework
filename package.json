@@ -17,7 +17,7 @@
     "compile": "tsc -p .",
     "fix": "gts fix",
     "prepare": "npm run compile",
-    "pretest": "npm run compile",
+    "pretest": "npm run compile && copyfiles -u 1 test/assets/* build/test/",
     "posttest": "npm run check"
   },
   "files": [
@@ -37,6 +37,7 @@
     "@types/mocha": "^5.2.7",
     "@types/node": "^10.17.16",
     "@types/supertest": "^2.0.8",
+    "copyfiles": "^2.2.0",
     "gts": "^1.1.2",
     "mocha": "^6.2.2",
     "supertest": "^4.0.2",

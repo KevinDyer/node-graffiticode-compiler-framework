@@ -23,13 +23,14 @@ import {
 } from '../src/invoker';
 
 class FakeCompiler implements Compiler {
-  _language: string;
+  language: string;
   _authError?: AuthError;
   _validateError?: InvalidArgumentError;
   _compileError?: Error;
+  assetPath?: string;
 
   constructor(language: string) {
-    this._language = language;
+    this.language = language;
   }
 
   setAuthError(err?: AuthError) {
@@ -44,8 +45,8 @@ class FakeCompiler implements Compiler {
     this._compileError = err;
   }
 
-  get language() {
-    return this._language;
+  setAssertPath(assetPath: string) {
+    this.assetPath = assetPath;
   }
 
   // tslint:disable-next-line:no-any
@@ -106,7 +107,9 @@ describe('invoker', () => {
   });
 
   afterEach('Stop server', done => {
-    server.close(done);
+    if (server) {
+      server.close(done);
+    }
   });
 
   it('should return language greeting', async () => {
@@ -138,6 +141,68 @@ describe('invoker', () => {
     const actual = res.body.toString();
     assert(res.statusCode === 200, `expected 200 but got ${res.statusCode}`);
     assert(actual === 'LTest', `expected LTest from /lang but got ${actual}`);
+  });
+
+  it('should return 404 if no assetPath', async () => {
+    const { address, port } = server.address() as net.AddressInfo;
+    const options: http.RequestOptions = {
+      hostname: address,
+      port,
+      path: '/style.css',
+      method: 'GET',
+    };
+    const res = await makeRequest(options);
+    assert(res.statusCode === 404, `expected 404 but got ${res.statusCode}`);
+  });
+
+  it('should return asset if assetPath and exists', async () => {
+    // Arrange
+    await new Promise(r => server.close(r));
+    compiler = new FakeCompiler('LTest');
+    compiler.setAssertPath(__dirname + '/assets');
+    server = getServer(compiler);
+    await new Promise(r => server.listen(0, '0.0.0.0', r));
+    const { address, port } = server.address() as net.AddressInfo;
+    const options: http.RequestOptions = {
+      hostname: address,
+      port,
+      path: '/style.css',
+      method: 'GET',
+    };
+    const expect = `.foo {\n  display: flex;\n}`;
+
+    // Act
+    const res = await makeRequest(options);
+
+    // Assert
+    const actual = res.body.toString();
+    assert(res.statusCode === 200, `expected 200 but got ${res.statusCode}`);
+    assert(
+      actual === expect,
+      `expected "${expect}" from /lang but got "${actual}"`
+    );
+  });
+
+  it('should return 404 if assetPath, but asset does not exist', async () => {
+    // Arrange
+    await new Promise(r => server.close(r));
+    compiler = new FakeCompiler('LTest');
+    compiler.setAssertPath(__dirname + '/assets');
+    server = getServer(compiler);
+    await new Promise(r => server.listen(0, '0.0.0.0', r));
+    const { address, port } = server.address() as net.AddressInfo;
+    const options: http.RequestOptions = {
+      hostname: address,
+      port,
+      path: '/boo.js',
+      method: 'GET',
+    };
+
+    // Act
+    const res = await makeRequest(options);
+
+    // Assert
+    assert(res.statusCode === 404, `expected 404 but got ${res.statusCode}`);
   });
 
   it('should return compiled value', async () => {

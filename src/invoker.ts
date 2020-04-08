@@ -40,6 +40,7 @@ export interface Compiler {
   compile: CompileFunction;
   auth?: AuthFunction;
   validate?: ValidateFunction;
+  assetPath?: string;
 }
 
 function getModulePath(codeLocation: string): string | null {
@@ -161,6 +162,9 @@ function makeErrorHandler(): express.ErrorRequestHandler {
 
 export function createApp(compiler: Compiler): express.Application {
   const app = express();
+  if (compiler.assetPath) {
+    app.use(express.static(compiler.assetPath));
+  }
   app.use(express.json({ limit: '50mb' }));
   app.get('/', makeRootHandler(compiler.language));
   app.get('/lang', makeLanguageHandler(compiler.language));

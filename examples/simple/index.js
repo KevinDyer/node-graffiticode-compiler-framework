@@ -18,7 +18,9 @@ exports.compiler = {
 
   async compile(code, data, config) {
     return null;
-  }
+  },
+
+  assetPath: __dirname + '/assets',
 };
 
 // This function can be used to serve a lambda function

@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { createValidateToken } from './auth';
 import {
   Compiler,
   getCompiler,
@@ -27,7 +28,16 @@ import * as minimist from 'minimist';
 import { resolve } from 'path';
 
 // Exports
-export { AuthError, InvalidArgumentError, createApp, createLambda };
+export {
+  // ValidateToken
+  createValidateToken,
+  // Errors
+  AuthError,
+  InvalidArgumentError,
+  // Basic Creates
+  createApp,
+  createLambda,
+};
 
 // Supported command-line flags
 const FLAG = {

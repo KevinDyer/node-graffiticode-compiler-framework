@@ -23,8 +23,10 @@
     "posttest": "npm run check"
   },
   "files": [
-    "build/src/*.js",
-    "build/src/*.d.ts"
+    "build/src/**/*.js",
+    "!build/src/**/*.spec.js",
+    "build/src/**/*.d.ts",
+    "!build/src/**/*.spec.d.ts"
   ],
   "bin": {
     "graffiticode-compiler-framework": "./build/src/index.js"

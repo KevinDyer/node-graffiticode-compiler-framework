@@ -11,13 +11,26 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-const { createLambda } = require('../../');
+const {
+  createLambda,
+  createValidateToken,
+  AuthError,
+} = require('../../');
+
+const validateToken = createValidateToken({ lang: 'L2' });
 
 exports.compiler = {
-  language: 'Simple',
+  language: 'L2',
 
   async compile(code, data, config) {
     return null;
+  },
+
+  async auth(token) {
+    const res = await validateToken({ token });
+    if (res.access.indexOf('compile') === -1) {
+      throw new AuthError('User does not have compile access');
+    }
   },
 
   assetPath: __dirname + '/assets',

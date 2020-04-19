@@ -100,13 +100,13 @@ function makeRequest(options: http.RequestOptions, body?: any): Promise<any> {
 describe('invoker', () => {
   let compiler: FakeCompiler;
   let server: http.Server;
-  beforeEach('Start server', done => {
+  beforeEach(done => {
     compiler = new FakeCompiler('LTest');
     server = getServer(compiler);
     server.listen(0, '0.0.0.0', done);
   });
 
-  afterEach('Stop server', done => {
+  afterEach(done => {
     if (server) {
       server.close(done);
     }

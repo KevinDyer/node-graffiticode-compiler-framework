@@ -125,9 +125,9 @@ function makeCompileHandler(compiler: Compiler): express.RequestHandler {
     next: express.NextFunction
   ) => {
     try {
-      const { token, code, data, config = {} } = req.body;
+      const { auth, code, data, config = {} } = req.body;
       if (compiler.auth) {
-        await compiler.auth(token);
+        await compiler.auth(auth);
       }
       if (compiler.validate) {
         await compiler.validate(code, data, config);

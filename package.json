@@ -12,7 +12,7 @@
     "minimist": "^1.2.3"
   },
   "scripts": {
-    "test": "jest",
+    "test": "jest --testPathIgnorePatterns build",
     "test:dev": "jest --watch --testPathIgnorePatterns build",
     "check": "gts check",
     "clean": "gts clean",

@@ -10,13 +10,7 @@ const count = buildCount({ postAuth });
 const createValidateToken = buildCreateValidateToken({ postAuth, count });
 
 // Exports
-export {
-  // PostAuth
-  buildPostAuth,
-  postAuth,
-  // Count
-  buildCount,
-  count,
-  // ValidateToken
-  createValidateToken,
-};
+export * from './count';
+export * from './post-auth';
+export * from './validate-token';
+export { count, postAuth, createValidateToken };

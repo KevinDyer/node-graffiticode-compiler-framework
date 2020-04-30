@@ -3,7 +3,7 @@
   "version": "0.0.15",
   "repository": "https://github.com/kevindyer/node-graffiticode-compiler-framework.git",
   "main": "build/src/index.js",
-  "types": "build/src/invoker.d.ts",
+  "types": "build/src/index.d.ts",
   "dependencies": {
     "aws-lambda": "^1.0.6",
     "aws-serverless-express": "^3.3.8",

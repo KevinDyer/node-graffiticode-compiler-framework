@@ -52,23 +52,25 @@ export function buildValidateToken(
   };
 }
 
-interface CreateValidateTokenRequest {
+export interface CreateValidateTokenRequest {
   lang: string;
 }
 
-interface CreateValidateTokenFunction {
+export interface CreateValidateTokenFunction {
   (req: CreateValidateTokenRequest): ValidateTokenFunction;
 }
 
-interface BuildCreateValidateTokenRequest {
+export interface BuildCreateValidateTokenRequest {
   postAuth: PostAuthFunction;
   count: CountFunction;
 }
 
 export function buildCreateValidateToken(
   buildReq: BuildCreateValidateTokenRequest
-): Function {
-  return function createValidateToken(req: CreateValidateTokenRequest) {
+): CreateValidateTokenFunction {
+  return function createValidateToken(
+    req: CreateValidateTokenRequest
+  ): ValidateTokenFunction {
     return buildValidateToken({
       postAuth: buildReq.postAuth,
       count: buildReq.count,

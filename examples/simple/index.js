@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 const {
+  AuthError,
+  createCloudFunction,
   createLambda,
   createValidateToken,
-  AuthError,
 } = require('../../');
 
 const validateToken = createValidateToken({ lang: 'L2' });
@@ -38,3 +39,6 @@ exports.compiler = {
 
 // This function can be used to serve a lambda function
 exports.lambdaHandler = createLambda(this.compiler);
+
+// This function can be used to serve a lambda function
+exports.cloudFunctionHandler = createCloudFunction(this.compiler);

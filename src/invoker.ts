@@ -15,6 +15,8 @@
 import * as awsServerlessExpress from 'aws-serverless-express';
 import * as lambda from 'aws-lambda';
 import * as express from 'express';
+import * as functions from 'firebase-functions';
+import * as admin from 'firebase-admin';
 import * as http from 'http';
 import * as morgan from 'morgan';
 
@@ -192,4 +194,11 @@ export function createLambda(compiler: Compiler): lambda.Handler {
 
 export function getServer(compiler: Compiler): http.Server {
   return http.createServer(createApp(compiler));
+}
+
+export function createCloudFunction(
+  compiler: Compiler
+): functions.HttpsFunction {
+  admin.initializeApp();
+  return functions.https.onRequest(createApp(compiler));
 }

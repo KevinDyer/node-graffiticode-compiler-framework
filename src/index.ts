@@ -23,6 +23,7 @@ import {
   InvalidArgumentError,
   createApp,
   createLambda,
+  createCloudFunction,
 } from './invoker';
 import * as minimist from 'minimist';
 import { resolve } from 'path';
@@ -37,6 +38,7 @@ export {
   // Basic Creates
   createApp,
   createLambda,
+  createCloudFunction,
 };
 
 // Supported command-line flags

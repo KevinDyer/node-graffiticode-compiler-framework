@@ -16,6 +16,7 @@ import * as awsServerlessExpress from 'aws-serverless-express';
 import * as lambda from 'aws-lambda';
 import * as express from 'express';
 import * as http from 'http';
+import * as morgan from 'morgan';
 
 export interface CompileFunction {
   // tslint:disable-next-line:no-any
@@ -162,6 +163,11 @@ function makeErrorHandler(): express.ErrorRequestHandler {
 
 export function createApp(compiler: Compiler): express.Application {
   const app = express();
+  if (process.env.DEBUG === 'true') {
+    app.use(morgan('short'));
+  } else {
+    app.use(morgan('combined'));
+  }
   if (compiler.assetPath) {
     app.use(express.static(compiler.assetPath));
   }

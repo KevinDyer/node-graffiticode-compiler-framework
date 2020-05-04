@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as assert from 'assert';
+import * as bent from 'bent';
 import * as http from 'http';
 import * as net from 'net';
 import {
@@ -72,246 +72,171 @@ class FakeCompiler implements Compiler {
   }
 }
 
-// tslint:disable-next-line:no-any
-function makeRequest(options: http.RequestOptions, body?: any): Promise<any> {
-  return new Promise((resolve, reject) => {
-    const req = http.request(options, (res: http.IncomingMessage) => {
-      res.once('error', reject);
-      let body = Buffer.alloc(0);
-      res.on('data', chunk => {
-        body = Buffer.concat([body, chunk], body.length + chunk.length);
-      });
-      res.once('end', () => {
-        resolve({
-          statusCode: res.statusCode,
-          headers: res.headers,
-          body,
-        });
+function createAndStartServer(
+  compiler: Compiler
+): Promise<{
+  server: http.Server;
+}> {
+  return new Promise(resolve => {
+    const server = getServer(compiler);
+    server.listen(0, () => {
+      resolve({
+        server,
       });
     });
-    req.once('error', reject);
-    if (body) {
-      req.write(body);
-    }
-    req.end();
   });
+}
+
+function closeServer(server: http.Server) {
+  return new Promise(resolve => server.close(resolve));
 }
 
 describe('invoker', () => {
   let compiler: FakeCompiler;
   let server: http.Server;
-  beforeEach(done => {
+  beforeEach(async () => {
     compiler = new FakeCompiler('LTest');
-    server = getServer(compiler);
-    server.listen(0, '0.0.0.0', done);
+    const ret = await createAndStartServer(compiler);
+    server = ret.server;
   });
 
-  afterEach(done => {
+  afterEach(async () => {
     if (server) {
-      server.close(done);
+      await closeServer(server);
     }
   });
 
   it('should return language greeting', async () => {
-    const { address, port } = server.address() as net.AddressInfo;
-    const options: http.RequestOptions = {
-      hostname: address,
-      port,
-      path: '/',
-      method: 'GET',
-    };
-    const res = await makeRequest(options);
-    const actual = res.body.toString();
-    assert(res.statusCode === 200, `expected 200 but got ${res.statusCode}`);
-    assert(
-      actual === 'Hello, LTest!',
-      `expected "Hello, LTest" from / but got ${actual}`
-    );
+    // Arrange
+    const { port } = server.address() as net.AddressInfo;
+    const getRoot = bent(`http://127.0.0.1:${port}`, 'string');
+
+    // Act
+    const actual = (await getRoot('/')) as string;
+
+    // Assert
+    expect(actual).toBe('Hello, LTest!');
   });
 
   it('should return language string', async () => {
-    const { address, port } = server.address() as net.AddressInfo;
-    const options: http.RequestOptions = {
-      hostname: address,
-      port,
-      path: '/lang',
-      method: 'GET',
-    };
-    const res = await makeRequest(options);
-    const actual = res.body.toString();
-    assert(res.statusCode === 200, `expected 200 but got ${res.statusCode}`);
-    assert(actual === 'LTest', `expected LTest from /lang but got ${actual}`);
+    // Arrange
+    const { port } = server.address() as net.AddressInfo;
+    const getLang = bent(`http://127.0.0.1:${port}`, 'string');
+
+    // Act
+    const actual = (await getLang('/lang')) as string;
+
+    // Assert
+    expect(actual).toBe('LTest');
   });
 
   it('should return 404 if no assetPath', async () => {
-    const { address, port } = server.address() as net.AddressInfo;
-    const options: http.RequestOptions = {
-      hostname: address,
-      port,
-      path: '/style.css',
-      method: 'GET',
-    };
-    const res = await makeRequest(options);
-    assert(res.statusCode === 404, `expected 404 but got ${res.statusCode}`);
+    // Arrange
+    const { port } = server.address() as net.AddressInfo;
+    const getAsset = bent(`http://127.0.0.1:${port}`, 404);
+
+    // Act
+    const stream = (await getAsset('/style.css')) as bent.FetchResponse;
+
+    // Assert
+    expect(stream.statusCode).toBe(404);
   });
 
   it('should return asset if assetPath and exists', async () => {
     // Arrange
-    await new Promise(r => server.close(r));
-    compiler = new FakeCompiler('LTest');
+    await closeServer(server);
     compiler.setAssertPath(__dirname + '/assets');
-    server = getServer(compiler);
-    await new Promise(r => server.listen(0, '0.0.0.0', r));
-    const { address, port } = server.address() as net.AddressInfo;
-    const options: http.RequestOptions = {
-      hostname: address,
-      port,
-      path: '/style.css',
-      method: 'GET',
-    };
-    const expect = `.foo {\n  display: flex;\n}`;
+    const ret = await createAndStartServer(compiler);
+    server = ret.server;
+    const { port } = server.address() as net.AddressInfo;
+    const getAsset = bent(`http://127.0.0.1:${port}`, 'string');
 
     // Act
-    const res = await makeRequest(options);
+    const actual = (await getAsset('/style.css')) as string;
 
     // Assert
-    const actual = res.body.toString();
-    assert(res.statusCode === 200, `expected 200 but got ${res.statusCode}`);
-    assert(
-      actual === expect,
-      `expected "${expect}" from /lang but got "${actual}"`
-    );
+    expect(actual).toBe(`.foo {\n  display: flex;\n}`);
   });
 
   it('should return 404 if assetPath, but asset does not exist', async () => {
     // Arrange
-    await new Promise(r => server.close(r));
-    compiler = new FakeCompiler('LTest');
+    await closeServer(server);
     compiler.setAssertPath(__dirname + '/assets');
-    server = getServer(compiler);
-    await new Promise(r => server.listen(0, '0.0.0.0', r));
-    const { address, port } = server.address() as net.AddressInfo;
-    const options: http.RequestOptions = {
-      hostname: address,
-      port,
-      path: '/boo.js',
-      method: 'GET',
-    };
+    const ret = await createAndStartServer(compiler);
+    server = ret.server;
+    const { port } = server.address() as net.AddressInfo;
+    const getAsset = bent(`http://127.0.0.1:${port}`, 404);
 
     // Act
-    const res = await makeRequest(options);
+    const stream = (await getAsset('/boo.js')) as bent.FetchResponse;
 
     // Assert
-    assert(res.statusCode === 404, `expected 404 but got ${res.statusCode}`);
+    expect(stream.statusCode).toBe(404);
   });
 
   it('should return compiled value', async () => {
-    const { address, port } = server.address() as net.AddressInfo;
-    const options: http.RequestOptions = {
-      hostname: address,
-      port,
-      path: '/compile',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-    const body = Buffer.from(
-      JSON.stringify({
-        code: {},
-        data: {},
-      })
-    );
-    const res = await makeRequest(options, body);
-    const actual = res.body.toString();
-    assert(res.statusCode === 200, `expected 200 but got ${res.statusCode}`);
-    assert(
-      actual === '"foo"',
-      `expected "foo" from /compile but got "${actual}"`
-    );
+    // Arrange
+    const { port } = server.address() as net.AddressInfo;
+    const postCompile = bent(`http://127.0.0.1:${port}`, 'POST', 'json');
+
+    // Act
+    const actual = await postCompile('/compile', { code: {}, data: {} });
+
+    // Assert
+    expect(actual).toBe('foo');
   });
 
   it('should return error if compile throws', async () => {
+    // Arrange
     compiler.setCompileError(new Error('failed to compile'));
+    const { port } = server.address() as net.AddressInfo;
+    const postCompile = bent(`http://127.0.0.1:${port}`, 'POST', 500);
 
-    const { address, port } = server.address() as net.AddressInfo;
-    const options: http.RequestOptions = {
-      hostname: address,
-      port,
-      path: '/compile',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-    const body = Buffer.from(
-      JSON.stringify({
-        code: {},
-        data: {},
-      })
-    );
-    const res = await makeRequest(options, body);
-    const actual = res.body.toString();
-    assert(res.statusCode === 500, `expected 500 but got ${res.statusCode}`);
-    assert(
-      actual === 'Internal Server Error',
-      `expected "Internal Server Error" from /compile but got "${actual}"`
-    );
+    // Act
+    const stream = (await postCompile('/compile', {
+      code: {},
+      data: {},
+    })) as bent.FetchResponse;
+    const actual = await stream.text();
+
+    // Assert
+    expect(stream.statusCode).toBe(500);
+    expect(actual).toBe('Internal Server Error');
   });
 
   it('should return error if auth throws', async () => {
+    // Arrange
     compiler.setAuthError(new AuthError('invalid token'));
+    const { port } = server.address() as net.AddressInfo;
+    const postCompile = bent(`http://127.0.0.1:${port}`, 'POST', 401);
 
-    const { address, port } = server.address() as net.AddressInfo;
-    const options: http.RequestOptions = {
-      hostname: address,
-      port,
-      path: '/compile',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-    const body = Buffer.from(
-      JSON.stringify({
-        code: {},
-        data: {},
-      })
-    );
-    const res = await makeRequest(options, body);
-    const actual = res.body.toString();
-    assert(res.statusCode === 401, `expected 401 but got ${res.statusCode}`);
-    assert(
-      actual === 'Unauthorized',
-      `expected "Unauthorized" from /compile but got "${actual}"`
-    );
+    // Act
+    const stream = (await postCompile('/compile', {
+      code: {},
+      data: {},
+    })) as bent.FetchResponse;
+    const actual = await stream.text();
+
+    // Assert
+    expect(stream.statusCode).toBe(401);
+    expect(actual).toBe('Unauthorized');
   });
 
   it('should return error if validate throws', async () => {
+    // Arrange
     compiler.setValidateError(new InvalidArgumentError('invalid code'));
+    const { port } = server.address() as net.AddressInfo;
+    const postCompile = bent(`http://127.0.0.1:${port}`, 'POST', 400);
 
-    const { address, port } = server.address() as net.AddressInfo;
-    const options: http.RequestOptions = {
-      hostname: address,
-      port,
-      path: '/compile',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-    const body = Buffer.from(
-      JSON.stringify({
-        code: {},
-        data: {},
-      })
-    );
-    const res = await makeRequest(options, body);
-    const actual = res.body.toString();
-    assert(res.statusCode === 400, `expected 400 but got ${res.statusCode}`);
-    assert(
-      actual === 'invalid code',
-      `expected "invalid code" from /compile but got "${actual}"`
-    );
+    // Act
+    const stream = (await postCompile('/compile', {
+      code: {},
+      data: {},
+    })) as bent.FetchResponse;
+    const actual = await stream.text();
+
+    // Assert
+    expect(stream.statusCode).toBe(400);
+    expect(actual).toBe('invalid code');
   });
 });

@@ -15,12 +15,8 @@
 import * as bent from 'bent';
 import * as http from 'http';
 import * as net from 'net';
-import {
-  getServer,
-  Compiler,
-  AuthError,
-  InvalidArgumentError,
-} from '../src/invoker';
+import * as path from 'path';
+import {getServer, Compiler, AuthError, InvalidArgumentError} from './invoker';
 
 class FakeCompiler implements Compiler {
   language: string;
@@ -108,7 +104,7 @@ describe('invoker', () => {
 
   it('should return language greeting', async () => {
     // Arrange
-    const { port } = server.address() as net.AddressInfo;
+    const {port} = server.address() as net.AddressInfo;
     const getRoot = bent(`http://127.0.0.1:${port}`, 'string');
 
     // Act
@@ -120,7 +116,7 @@ describe('invoker', () => {
 
   it('should return language string', async () => {
     // Arrange
-    const { port } = server.address() as net.AddressInfo;
+    const {port} = server.address() as net.AddressInfo;
     const getLang = bent(`http://127.0.0.1:${port}`, 'string');
 
     // Act
@@ -132,7 +128,7 @@ describe('invoker', () => {
 
   it('should return 404 if no assetPath', async () => {
     // Arrange
-    const { port } = server.address() as net.AddressInfo;
+    const {port} = server.address() as net.AddressInfo;
     const getAsset = bent(`http://127.0.0.1:${port}`, 404);
 
     // Act
@@ -145,17 +141,17 @@ describe('invoker', () => {
   it('should return asset if assetPath and exists', async () => {
     // Arrange
     await closeServer(server);
-    compiler.setAssertPath(__dirname + '/assets');
+    compiler.setAssertPath(path.join(__dirname, '..', 'test', 'assets'));
     const ret = await createAndStartServer(compiler);
     server = ret.server;
-    const { port } = server.address() as net.AddressInfo;
+    const {port} = server.address() as net.AddressInfo;
     const getAsset = bent(`http://127.0.0.1:${port}`, 'string');
 
     // Act
     const actual = (await getAsset('/style.css')) as string;
 
     // Assert
-    expect(actual).toBe(`.foo {\n  display: flex;\n}`);
+    expect(actual).toBe('.foo {\n  display: flex;\n}');
   });
 
   it('should return 404 if assetPath, but asset does not exist', async () => {
@@ -164,7 +160,7 @@ describe('invoker', () => {
     compiler.setAssertPath(__dirname + '/assets');
     const ret = await createAndStartServer(compiler);
     server = ret.server;
-    const { port } = server.address() as net.AddressInfo;
+    const {port} = server.address() as net.AddressInfo;
     const getAsset = bent(`http://127.0.0.1:${port}`, 404);
 
     // Act
@@ -176,11 +172,11 @@ describe('invoker', () => {
 
   it('should return compiled value', async () => {
     // Arrange
-    const { port } = server.address() as net.AddressInfo;
+    const {port} = server.address() as net.AddressInfo;
     const postCompile = bent(`http://127.0.0.1:${port}`, 'POST', 'json');
 
     // Act
-    const actual = await postCompile('/compile', { code: {}, data: {} });
+    const actual = await postCompile('/compile', {code: {}, data: {}});
 
     // Assert
     expect(actual).toBe('foo');
@@ -189,7 +185,7 @@ describe('invoker', () => {
   it('should return error if compile throws', async () => {
     // Arrange
     compiler.setCompileError(new Error('failed to compile'));
-    const { port } = server.address() as net.AddressInfo;
+    const {port} = server.address() as net.AddressInfo;
     const postCompile = bent(`http://127.0.0.1:${port}`, 'POST', 500);
 
     // Act
@@ -207,7 +203,7 @@ describe('invoker', () => {
   it('should return error if auth throws', async () => {
     // Arrange
     compiler.setAuthError(new AuthError('invalid token'));
-    const { port } = server.address() as net.AddressInfo;
+    const {port} = server.address() as net.AddressInfo;
     const postCompile = bent(`http://127.0.0.1:${port}`, 'POST', 401);
 
     // Act
@@ -225,7 +221,7 @@ describe('invoker', () => {
   it('should return error if validate throws', async () => {
     // Arrange
     compiler.setValidateError(new InvalidArgumentError('invalid code'));
-    const { port } = server.address() as net.AddressInfo;
+    const {port} = server.address() as net.AddressInfo;
     const postCompile = bent(`http://127.0.0.1:${port}`, 'POST', 400);
 
     // Act

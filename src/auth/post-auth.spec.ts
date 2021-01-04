@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { buildPostAuth } from './post-auth';
+import {buildPostAuth} from './post-auth';
 
 describe('postAuth', () => {
   it('should ...', async () => {
@@ -31,7 +31,7 @@ describe('postAuth', () => {
     };
 
     // Act
-    await postAuth({ path, data });
+    await postAuth({path, data});
 
     // Assert
   });

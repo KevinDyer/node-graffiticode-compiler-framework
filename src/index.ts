@@ -14,9 +14,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Compiler, getCompiler, getServer } from './invoker';
+import {Compiler, getCompiler, getServer} from './invoker';
 import * as minimist from 'minimist';
-import { resolve } from 'path';
+import {resolve} from 'path';
 
 // Exports
 export * from './auth';
@@ -54,8 +54,7 @@ const TARGET = argv[FLAG.TARGET] || process.env[ENV.TARGET] || 'target';
 if (!module.parent) {
   const compiler = getCompiler(CODE_LOCATION, TARGET) as Compiler;
   if (!compiler) {
-    console.error('Could not load the compiler, shutting down.');
-    process.exit(1);
+    throw new Error('Could not load the compiler.');
   }
 
   const server = getServer(compiler);

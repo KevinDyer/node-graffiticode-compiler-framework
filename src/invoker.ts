@@ -128,7 +128,7 @@ function makeCompileHandler(compiler: Compiler): express.RequestHandler {
     next: express.NextFunction
   ) => {
     try {
-      const { auth, code, data, config = {} } = req.body;
+      const {auth, code, data, config = {}} = req.body;
       if (compiler.auth) {
         await compiler.auth(auth);
       }
@@ -173,7 +173,7 @@ export function createApp(compiler: Compiler): express.Application {
   if (compiler.assetPath) {
     app.use(express.static(compiler.assetPath));
   }
-  app.use(express.json({ limit: '50mb' }));
+  app.use(express.json({limit: '50mb'}));
   app.get('/', makeRootHandler(compiler.language));
   app.get('/lang', makeLanguageHandler(compiler.language));
   app.post('/compile', makeCompileHandler(compiler));

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { buildValidateToken } from './validate-token';
+import {buildValidateToken} from './validate-token';
 
 describe('validate-token', () => {
   it('should return default if no token', async () => {
@@ -22,11 +22,11 @@ describe('validate-token', () => {
     const postAuth = jest
       .fn()
       .mockRejectedValue(new Error('should not be called'));
-    const validateToken = buildValidateToken({ lang, count, postAuth });
+    const validateToken = buildValidateToken({lang, count, postAuth});
     const token = null;
 
     // Act
-    const res = await validateToken({ token });
+    const res = await validateToken({token});
 
     // Assert
     expect(res.address).toEqual('guest');
@@ -39,12 +39,12 @@ describe('validate-token', () => {
     const count = jest.fn().mockResolvedValue({});
     const postAuth = jest
       .fn()
-      .mockResolvedValue({ address: 'address', access: 'access' });
-    const validateToken = buildValidateToken({ lang, count, postAuth });
+      .mockResolvedValue({address: 'address', access: 'access'});
+    const validateToken = buildValidateToken({lang, count, postAuth});
     const token = 'token';
 
     // Act
-    const res = await validateToken({ token });
+    const res = await validateToken({token});
 
     // Assert
     expect(postAuth).toHaveBeenCalledWith({
@@ -54,7 +54,7 @@ describe('validate-token', () => {
         lang,
       },
     });
-    expect(count).toHaveBeenCalledWith({ token, lang, increment: 1 });
+    expect(count).toHaveBeenCalledWith({token, lang, increment: 1});
     expect(res.address).toEqual('address');
     expect(res.access).toEqual('access');
   });
@@ -65,13 +65,13 @@ describe('validate-token', () => {
     const count = jest.fn().mockResolvedValue({});
     const postAuth = jest
       .fn()
-      .mockResolvedValue({ address: 'address', access: 'access' });
-    const validateToken = buildValidateToken({ lang, count, postAuth });
+      .mockResolvedValue({address: 'address', access: 'access'});
+    const validateToken = buildValidateToken({lang, count, postAuth});
     const token = 'token';
 
     // Act
-    const res1 = await validateToken({ token });
-    const res2 = await validateToken({ token });
+    const res1 = await validateToken({token});
+    const res2 = await validateToken({token});
 
     // Assert
     expect(postAuth).toHaveBeenCalledTimes(1);
@@ -83,8 +83,8 @@ describe('validate-token', () => {
       },
     });
     expect(count).toHaveBeenCalledTimes(2);
-    expect(count).toHaveBeenNthCalledWith(1, { token, lang, increment: 1 });
-    expect(count).toHaveBeenNthCalledWith(2, { token, lang, increment: 1 });
+    expect(count).toHaveBeenNthCalledWith(1, {token, lang, increment: 1});
+    expect(count).toHaveBeenNthCalledWith(2, {token, lang, increment: 1});
     expect(res1.address).toEqual('address');
     expect(res1.access).toEqual('access');
     expect(res2.address).toEqual('address');

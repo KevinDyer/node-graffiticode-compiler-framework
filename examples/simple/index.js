@@ -18,7 +18,7 @@ const {
   createValidateToken,
 } = require('../../');
 
-const validateToken = createValidateToken({ lang: 'L2' });
+const validateToken = createValidateToken({lang: 'L2'});
 
 exports.compiler = {
   language: 'L2',
@@ -28,7 +28,7 @@ exports.compiler = {
   },
 
   async auth(token) {
-    const res = await validateToken({ token });
+    const res = await validateToken({token});
     if (res.access.indexOf('compile') === -1) {
       throw new AuthError('User does not have compile access');
     }

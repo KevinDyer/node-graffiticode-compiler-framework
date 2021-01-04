@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { PostAuthFunction } from './post-auth';
+import {PostAuthFunction} from './post-auth';
 
 export interface CountRequest {
   token: string;
@@ -20,10 +20,8 @@ export interface CountRequest {
   increment: number;
 }
 
-export interface CountResponse {}
-
 export interface CountFunction {
-  (req: CountRequest): Promise<CountResponse>;
+  (req: CountRequest): Promise<void>;
 }
 
 export interface BuildCountRequest {
@@ -31,11 +29,11 @@ export interface BuildCountRequest {
 }
 
 export function buildCount(buildReq: BuildCountRequest): CountFunction {
-  return async function count(req: CountRequest): Promise<CountResponse> {
+  return async function count(req: CountRequest): Promise<void> {
     if (req.increment < 1) {
       throw new Error('increment must be greater than zero');
     }
-    return buildReq.postAuth({
+    await buildReq.postAuth({
       path: '/count',
       data: {
         jwt: req.token,

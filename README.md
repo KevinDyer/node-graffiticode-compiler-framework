@@ -11,6 +11,10 @@ An open source framework for writing [graffiticode](https://graffiticode.com) co
 
   A CLI that scaffolds a new langugage
 
+- __WIP__ [`deployer`](./packages/deployer)
+
+  A CLI that deploys graffiticode packages
+
 # Contributing
 
 Contributions to this library are welcome and encouraged. See

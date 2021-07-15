@@ -26,6 +26,9 @@
     "posttest": "npm run lint",
     "lint": "gts lint"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "files": [
     "build/src/**/*.js",
     "!build/src/**/*.spec.js",

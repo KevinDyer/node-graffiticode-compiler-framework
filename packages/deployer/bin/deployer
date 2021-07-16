@@ -3,4 +3,5 @@
 'use strict';
 
 // eslint-disable-next-line no-unused-expressions
-require('../src/cli')().parse(process.argv.slice(2));
+const { cli } = require('../src/cli');
+cli().parse(process.argv.slice(2));

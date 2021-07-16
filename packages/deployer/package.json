@@ -25,6 +25,9 @@
     "test": "jest"
   },
   "dependencies": {
+    "@google-cloud/cloudbuild": "^2.2.5",
+    "esm": "^3.2.25",
+    "tar": "^6.1.0",
     "yargs": "^17.0.1"
   },
   "bugs": {

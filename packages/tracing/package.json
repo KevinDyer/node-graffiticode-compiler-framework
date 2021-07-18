@@ -1,6 +1,6 @@
 {
   "name": "@graffiticode/tracing",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Opentelemetry tracing setup for graffiticode",
   "main": "src/index.js",
   "publishConfig": {

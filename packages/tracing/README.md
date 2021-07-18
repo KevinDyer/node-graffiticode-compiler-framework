@@ -2,8 +2,9 @@
 ---
 Setup [OpenTelemetry](https://opentelemetry.io/) for tracing
 
-## Use
+## Getting Started
 ```
+npm i @graffiticode/tracing
 node -r @graffiticode/tracing app.js
 ```
 

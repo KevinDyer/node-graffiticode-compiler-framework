@@ -9,7 +9,6 @@ const parseArgumentsIntoOptions = async ({ directory }) => {
   try {
     const gitIgnoreContents = await fs.readFile(path.join(directory, '.gitignore'));
     console.log(gitIgnoreContents.toString());
-    const 
   } catch (err) {
     console.log(`Failed to read .gitignore`, err);
   }

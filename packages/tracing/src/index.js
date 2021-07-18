@@ -1,32 +1,27 @@
-const { diag, DiagConsoleLogger, DiagLogLevel } = require("@opentelemetry/api");
-const { NodeTracerProvider } = require("@opentelemetry/node");
+const { diag, DiagConsoleLogger, DiagLogLevel } = require('@opentelemetry/api');
+const { NodeTracerProvider } = require('@opentelemetry/node');
 const { Resource } = require('@opentelemetry/resources');
 const { ResourceAttributes } = require('@opentelemetry/semantic-conventions');
-const { BatchSpanProcessor } = require("@opentelemetry/tracing");
-const { ZipkinExporter } = require("@opentelemetry/exporter-zipkin");
-const { registerInstrumentations } = require("@opentelemetry/instrumentation");
-const { HttpInstrumentation } = require("@opentelemetry/instrumentation-http");
-const { GrpcInstrumentation } = require("@opentelemetry/instrumentation-grpc");
-const { PgInstrumentation } = require("@opentelemetry/instrumentation-pg");
+const { BatchSpanProcessor } = require('@opentelemetry/tracing');
+const { registerInstrumentations } = require('@opentelemetry/instrumentation');
+const { HttpInstrumentation } = require('@opentelemetry/instrumentation-http');
+const { GrpcInstrumentation } = require('@opentelemetry/instrumentation-grpc');
+const { PgInstrumentation } = require('@opentelemetry/instrumentation-pg');
+
+const { createSpanExporter } = require('./span-exporter');
+
+const applicationName = 'getting-start';
 
 const provider = new NodeTracerProvider({
   resource: new Resource({
-    [ResourceAttributes.SERVICE_NAME]: "getting-started",
+    [ResourceAttributes.SERVICE_NAME]: applicationName,
   })
 });
 
-diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.ALL);
+diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.INFO);
 
-provider.addSpanProcessor(
-  new BatchSpanProcessor(
-    new ZipkinExporter({
-      // If you are running your tracing backend on another host,
-      // you can point to it using the `url` parameter of the
-      // exporter config.
-    })
-  )
-);
-
+const exporter = createSpanExporter();
+provider.addSpanProcessor(new BatchSpanProcessor(exporter));
 provider.register();
 
 registerInstrumentations({
@@ -37,4 +32,4 @@ registerInstrumentations({
   ],
 });
 
-console.log("tracing initialized"); 
+console.log('tracing initialized');

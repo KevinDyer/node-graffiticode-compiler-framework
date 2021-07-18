@@ -19,5 +19,4 @@ MIT
 
 ## Collaborators
 
-- Jeff Dyer <kevin.m.dyer@gmail.com>
 - Kevin Dyer <kevin.m.dyer@gmail.com>

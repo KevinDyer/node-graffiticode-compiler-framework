@@ -15,6 +15,10 @@ An open source framework for writing [graffiticode](https://graffiticode.com) co
 
   A CLI that deploys graffiticode packages
 
+- __WIP__ [`tracing`](./packages/tracing)
+
+  A module to setup opentelemetry tracing for graffiticode applications
+
 # Contributing
 
 Contributions to this library are welcome and encouraged. See

@@ -1,0 +1,36 @@
+{
+  "name": "@graffiticode/create-monolith-container",
+  "version": "0.1.9",
+  "description": "> TODO: description",
+  "author": "Kevin Dyer <kevin.m.dyer@gmail.com>",
+  "homepage": "https://github.com/KevinDyer/node-graffiticode-compiler-framework#readme",
+  "license": "MIT",
+  "main": "src/cli.js",
+  "bin": {
+    "create-monolith-container": "bin/create-monolith-container"
+  },
+  "directories": {
+    "src": "src"
+  },
+  "files": [
+    "bin",
+    "src"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KevinDyer/node-graffiticode-compiler-framework.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "dependencies": {
+    "simple-git": "^2.47.0",
+    "yargs": "^17.2.1"
+  },
+  "bugs": {
+    "url": "https://github.com/KevinDyer/node-graffiticode-compiler-framework/issues"
+  }
+}

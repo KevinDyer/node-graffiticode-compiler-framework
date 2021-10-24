@@ -25,16 +25,16 @@
     "test": "jest"
   },
   "dependencies": {
-    "@google-cloud/cloudbuild": "^2.2.5",
+    "@google-cloud/cloudbuild": "^2.6.0",
     "esm": "^3.2.25",
-    "tar": "^6.1.0",
-    "yargs": "^17.0.1"
+    "tar": "^6.1.11",
+    "yargs": "^17.2.1"
   },
   "bugs": {
     "url": "https://github.com/KevinDyer/node-graffiticode-compiler-framework/issues"
   },
   "homepage": "https://github.com/KevinDyer/node-graffiticode-compiler-framework#readme",
   "devDependencies": {
-    "jest": "^27.0.6"
+    "jest": "^27.3.1"
   }
 }

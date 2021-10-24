@@ -1,6 +1,6 @@
 {
   "name": "@graffiticode/deployer",
-  "version": "0.1.7",
+  "version": "0.1.9",
   "description": "A CLI to deploy graffiticode packages",
   "keywords": [],
   "author": "Kevin Dyer <kevin.m.dyer@gmail.com>",

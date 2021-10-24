@@ -45,7 +45,6 @@ class FakeCompiler implements Compiler {
     this.assetPath = assetPath;
   }
 
-  // tslint:disable-next-line:no-any
   async compile(code: {}, data: {}, config: {}): Promise<any> {
     if (this._compileError) {
       throw this._compileError;
@@ -53,14 +52,12 @@ class FakeCompiler implements Compiler {
     return 'foo';
   }
 
-  // tslint:disable-next-line:no-any
   async validate(code: {}, data: {}, config: {}): Promise<any> {
     if (this._validateError) {
       throw this._validateError;
     }
   }
 
-  // tslint:disable-next-line:no-any
   async auth(token: string): Promise<any> {
     if (this._authError) {
       throw this._authError;
@@ -68,9 +65,7 @@ class FakeCompiler implements Compiler {
   }
 }
 
-function createAndStartServer(
-  compiler: Compiler
-): Promise<{
+function createAndStartServer(compiler: Compiler): Promise<{
   server: http.Server;
 }> {
   return new Promise(resolve => {

@@ -21,17 +21,14 @@ import * as http from 'http';
 import * as morgan from 'morgan';
 
 export interface CompileFunction {
-  // tslint:disable-next-line:no-any
   (code: {}, data: {}, config: {}): Promise<any>;
 }
 
 export interface ValidateFunction {
-  // tslint:disable-next-line:no-any
   (code: {}, data: {}, config: {}): Promise<any>;
 }
 
 export interface AuthFunction {
-  // tslint:disable-next-line:no-any
   (token: string): Promise<any>;
 }
 
@@ -50,23 +47,19 @@ function getModulePath(codeLocation: string): string | null {
   let path: string | null = null;
   try {
     path = require.resolve(codeLocation);
-  } catch (ex) {
+  } catch (ex: any) {
     console.error(ex.stack);
     try {
       // TODO: Decide if we want to keep this fallback.
       path = require.resolve(codeLocation + '/function.js');
-    } catch (ex) {
+    } catch (ex: any) {
       console.error(ex.stack);
     }
   }
   return path;
 }
 
-function getModuleProperty(
-  codeLocation: string,
-  target: string
-  // tslint:disable-next-line:no-any
-): any | null {
+function getModuleProperty(codeLocation: string, target: string): any | null {
   try {
     const modulePath = getModulePath(codeLocation);
     if (modulePath === null) {
@@ -83,7 +76,7 @@ function getModuleProperty(
       }
     }, module);
     return property;
-  } catch (ex) {
+  } catch (ex: any) {
     let additionalHint: string;
     // TODO: this should be done based on ex.code rather than string matching.
     console.log(ex.code);

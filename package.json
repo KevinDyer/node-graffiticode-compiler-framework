@@ -5,7 +5,7 @@
     "version": "lerna version --conventional-commits --create-release github",
     "publish": "lerna publish from-git --yes"
   },
-  "devDependencies": {
+  "dependencies": {
     "lerna": "^4.0.0"
   }
 }

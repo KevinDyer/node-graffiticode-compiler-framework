@@ -1,11 +1,11 @@
-# `@artcompiler/deployer`
+# `@graffiticode/deployer`
 
 > A CLI to deploy artcompiler implementations of graffiticode packages
 
 ## Usage
 
 ```
-npm -g i @artcompiler/deployer
+npm -g i @graffiticode/deployer
 
 deployer --help
 

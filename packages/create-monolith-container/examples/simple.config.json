@@ -2,7 +2,7 @@
   "compilers": {
     "L0": {
       "repoUrl": "https://github.com/artcompiler/l0",
-      "runtime": "node",
+      "runtime": "nodejs",
       "args": [
         "-r",
         "./src/tracing.js",

@@ -1,4 +1,5 @@
 const fs = require('fs/promises');
+const path = require('path');
 const { URL } = require('url');
 
 const buildCompiler = compiler => {
@@ -30,19 +31,49 @@ const buildCompiler = compiler => {
   };
 };
 
+const getCompilersFromConfigFile = async (configFilePath) => {
+  if (!path.isAbsolute(configFilePath)) {
+    configFilePath = path.join(process.cwd(), configFilePath);
+  }
+  const config = require(configFilePath);
+
+  if (config.compilers) {
+    const defaultCompiler = {
+      cmd: null,
+      args: [],
+      deps: [],
+    }
+    const compilers = Object.keys(config.compilers)
+      .map(compiler => ({
+        ...defaultCompiler,
+        ...config.compilers[compiler],
+        lang: compiler.toLocaleUpperCase(),
+      }));
+    return compilers;
+  }
+  return [];
+};
+
 exports.getConfig = async (argv) => {
   let {
+    config,
     compilers = [],
     removeBuildDirectory = true,
   } = argv;
-
   if (!Array.isArray(compilers)) {
     compilers = [compilers];
+  }
+  compilers = compilers.map(buildCompiler);
+  if (config) {
+    const configCompilers = await getCompilersFromConfigFile(config);
+    compilers = [
+      ...compilers,
+      ...configCompilers,
+    ];
   }
   if (compilers.length <= 0) {
     throw new Error('No compilers specified');
   }
-  compilers = compilers.map(buildCompiler);
 
   return {
     removeBuildDirectory,

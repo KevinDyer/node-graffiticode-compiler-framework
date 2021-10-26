@@ -1,0 +1,13 @@
+{
+  "compilers": {
+    "L0": {
+      "repoUrl": "https://github.com/artcompiler/l0",
+      "runtime": "node",
+      "args": [
+        "-r",
+        "./src/tracing.js",
+        "app.js"
+      ]
+    }
+  }
+}

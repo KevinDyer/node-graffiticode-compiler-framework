@@ -1,3 +1,4 @@
+const { exec } = require('child_process');
 const fs = require('fs/promises');
 const os = require('os');
 const path = require('path');
@@ -138,7 +139,7 @@ FROM alpine
 
 WORKDIR /usr/src/monolith
 
-RUN apk add --no-cache ${deps.join(' ')}
+RUN apk add --no-cache bash ${deps.join(' ')}
 
 ${compilerContexts.map(compilerContext => `
 # Build ${compilerContext.lang}
@@ -147,20 +148,33 @@ ${compilerContext.runtime.getDockerfileCommands(compilerContext)}
 
 ${compilerContexts.map(({ lang }) => `COPY compilers/${lang}/run.sh compilers/${lang}/run.sh`).join('\n')}
 COPY init_wrapper_script.sh ./
-CMD ./init_wrapper_script.sh
-
+CMD ["bash", "init_wrapper_script.sh"]
 `);
 
-  const data = await fs.readFile(dockerfilePath, 'utf-8');
-  console.log(data);
+  // const data = await fs.readFile(dockerfilePath, 'utf-8');
+  // console.log(data);
+
+  await new Promise((resolve, reject) => {
+    const proc = exec("docker build -t monolith .", { cwd: buildDir });
+    proc.on('exit', (code, signal) => {
+      console.log(code, signal);
+      if (code !== 0) {
+        reject(new Error(`docker ubild failed with exit code${code}`));
+      } else {
+        resolve();
+      }
+    });
+  });
 };
 
 const teardown = async (context) => {
   const { removeBuildDirectory } = context.getConfig();
 
+  const buildDir = context.getValue('buildDir');
   if (removeBuildDirectory) {
-    const buildDir = context.getValue('buildDir');
     fs.rm(buildDir, { recursive: true, force: true });
+  } else {
+    console.log(`Build directory: ${buildDir}`);
   }
 };
 

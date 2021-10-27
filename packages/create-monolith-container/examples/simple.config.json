@@ -4,8 +4,6 @@
       "repoUrl": "https://github.com/artcompiler/l0",
       "runtime": "nodejs",
       "args": [
-        "-r",
-        "./src/tracing.js",
         "app.js"
       ]
     }

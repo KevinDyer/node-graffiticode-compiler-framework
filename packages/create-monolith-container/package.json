@@ -24,7 +24,7 @@
     "url": "git+https://github.com/KevinDyer/node-graffiticode-compiler-framework.git"
   },
   "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
+    "test": "jest"
   },
   "dependencies": {
     "simple-git": "^2.47.0",
@@ -32,5 +32,8 @@
   },
   "bugs": {
     "url": "https://github.com/KevinDyer/node-graffiticode-compiler-framework/issues"
+  },
+  "devDependencies": {
+    "jest": "^27.3.1"
   }
 }

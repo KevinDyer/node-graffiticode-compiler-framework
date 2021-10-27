@@ -1,6 +1,6 @@
 const buildGetNodeDependencies = context => compilerContext => {
   const { deps } = compilerContext;
-  return ['nodejs', ...deps];
+  return ['nodejs', 'npm', ...deps];
 }
 
 const buildGetNodeCommmand = context => compilerContext => {
@@ -12,11 +12,13 @@ const buildGetNodeCommmand = context => compilerContext => {
 }
 
 const buildGetNodeDockerfileCommands = context => compilerContext => {
-  return `COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run build
-RUN npm ci --production
+  const { lang } = compilerContext;
+  const prefix = `./compilers/${lang}`;
+  return `COPY ${prefix}/package*.json ${prefix}/
+RUN npm --prefix=${prefix} install
+COPY ${prefix} ${prefix}
+RUN npm --prefix=${prefix} run --if-present build
+RUN npm --prefix=${prefix} ci --production
 `;
 };
 

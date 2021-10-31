@@ -15,6 +15,7 @@ function cli(cwd) {
     .alias('c', 'compilers')
     .alias('compiler', 'compilers');
   parser.boolean('removeBuildDirectory');
+  parser.string('config');
 
   parser.usage(
     "$0",

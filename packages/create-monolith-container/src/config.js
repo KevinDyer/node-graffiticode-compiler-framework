@@ -1,4 +1,3 @@
-const fs = require('fs/promises');
 const path = require('path');
 const { URL } = require('url');
 
@@ -28,6 +27,28 @@ const buildCompiler = compiler => {
     cmd: null,
     args: [],
     deps: [],
+    env: {},
+    port: null,
+  };
+};
+
+const createApiContext = async ({ compilers }) => {
+  const apiEnv = compilers.reduce((apiEnv, compiler) => {
+    const { lang, port: compilerPort } = compiler;
+    apiEnv[`BASE_URL_${lang}`] = `http://127.0.0.1:${compilerPort}`;
+    return apiEnv;
+  }, {});
+  const apiPort = 8080;
+  apiEnv['PORT'] = apiPort.toString();
+  return {
+    args: ['-r', '@graffiticode/tracing', 'build/src/app.js'],
+    cmd: null,
+    deps: [],
+    env: apiEnv,
+    lang: 'api',
+    port: apiPort,
+    repoUrl: 'https://github.com/artcompiler/api',
+    runtime: 'nodejs',
   };
 };
 
@@ -38,20 +59,32 @@ const getCompilersFromConfigFile = async (configFilePath) => {
   const config = require(configFilePath);
 
   if (config.compilers) {
-    const defaultCompiler = {
-      cmd: null,
+    const defaultCompiler = () => ({
       args: [],
+      cmd: null,
       deps: [],
-    }
+      env: {},
+      port: null,
+      runtime: 'nodejs',
+    });
     const compilers = Object.keys(config.compilers)
-      .map(compiler => ({
-        ...defaultCompiler,
-        ...config.compilers[compiler],
-        lang: compiler.toLocaleUpperCase(),
+      .map(lang => ({
+        ...defaultCompiler(),
+        ...config.compilers[lang],
+        lang: lang.toLocaleUpperCase(),
       }));
     return compilers;
   }
   return [];
+};
+
+const setAppPorts = ({ apps }) => {
+  let nextPort = 5000;
+  apps.forEach(app => {
+    const port = nextPort++;
+    app.port = port;
+    app.env['PORT'] = port.toString();
+  });
 };
 
 exports.getConfig = async (argv) => {
@@ -74,9 +107,13 @@ exports.getConfig = async (argv) => {
   if (compilers.length <= 0) {
     throw new Error('No compilers specified');
   }
+  setAppPorts({ apps: compilers });
+
+  const api = await createApiContext({ compilers });
 
   return {
-    removeBuildDirectory,
+    api,
     compilers,
+    removeBuildDirectory,
   };
 };

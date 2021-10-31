@@ -18,87 +18,89 @@ const createContext = (config) => {
 };
 
 const createCompilerEntity = createRuntime => (entities, compiler) => {
-  let { lang, repoUrl, runtime, cmd, args, deps } = compiler;
-  runtime = createRuntime(runtime);
-  entities[lang] = { lang, repoUrl, runtime, cmd, args, deps };
+  const { lang, runtime } = compiler;
+  entities[lang] = {
+    ...compiler,
+    runtime: createRuntime(runtime),
+  };
   return entities;
 };
 
 const setup = async (context) => {
+  const { api, compilers } = context.getConfig();
+
   const buildDir = await fs.mkdtemp(path.join(os.tmpdir(), 'create-monolith-container-'));
   context.setValue('buildDir', buildDir);
 
-  const compilersDir = path.join(buildDir, 'compilers');
-  await fs.mkdir(compilersDir);
-  context.setValue('compilersDir', compilersDir);
+  const appsDir = path.join(buildDir, 'apps');
+  await fs.mkdir(appsDir);
+  context.setValue('appsDir', appsDir);
 
   const createRuntime = makeRuntimeFactory(context);
-  const { compilers } = context.getConfig();
   const ids = compilers.map(({ lang }) => lang);
   const entities = compilers.reduce(createCompilerEntity(createRuntime), {});
   context.setValue('compilerIds', ids);
   context.setValue('compilerContexts', entities);
+
+  context.setValue('apiContext', {
+    ...api,
+    runtime: createRuntime(api.runtime),
+  });
 };
 
 const selectCompilerContext = context => compilerId => context.getValue('compilerContexts')[compilerId];
 const selectCompilerContexts = context =>
   context.getValue('compilerIds')
     .map(selectCompilerContext(context));
+const selectAppContexts = context => {
+  return [
+    ...selectCompilerContexts(context),
+    context.getValue('apiContext'),
+  ];
+};
 
-const fetchSource = context => async (compilerContext) => {
-  const { lang, repoUrl } = compilerContext;
-  const compilersDir = context.getValue('compilersDir');
+const fetchAppSource = context => async (appContext) => {
+  const { lang, repoUrl } = appContext;
+  const appsDir = context.getValue('appsDir');
 
-  const git = simpleGit({ baseDir: compilersDir });
+  const git = simpleGit({ baseDir: appsDir });
   await git.clone(repoUrl, lang);
 
-  compilerContext.localPath = path.join(compilersDir, lang);
+  appContext.localPath = path.join(appsDir, lang);
 };
 
-const fetchSources = async (context) => {
-  await Promise.all(selectCompilerContexts(context)
-    .map(fetchSource(context)));
+const fetchAppSources = async (context) => {
+  await Promise.all(selectAppContexts(context)
+    .map(fetchAppSource(context)));
 };
 
-const createCompilerRunScript = context => async (compilerContext) => {
-  const { lang, localPath, runtime } = compilerContext;
-  const runScriptPath = path.join(localPath, 'run.sh');
+const createAppRunScript = context => async (appContext) => {
+  const buildDir = context.getValue('buildDir');
+  const { lang, runtime } = appContext;
+  const runScriptPath = path.join(buildDir, `run_${lang}.sh`);
   await fs.writeFile(runScriptPath, `#!/bin/bash
-
-# TODO Add environment
-
-# Run ${lang}
-${runtime.getCommand(compilerContext)}
+${runtime.getCommand(appContext)}
 `);
   await fs.chmod(runScriptPath, 0o775);
-  compilerContext.runScriptPath = runScriptPath;
+  appContext.runScriptPath = runScriptPath;
 
   // const data = await fs.readFile(runScriptPath, 'utf-8');
   // console.log(data);
 };
 
-const createCompilerRunScripts = async (context) => {
-  await Promise.all(selectCompilerContexts(context)
-    .map(createCompilerRunScript(context)));
+const createAppRunScripts = async (context) => {
+  await Promise.all(selectAppContexts(context)
+    .map(createAppRunScript(context)));
 };
 
-const createApiRunScript = async () => { };
-
 const createInitWrapperScript = async (context) => {
-  const apiRunScriptPath = context.getValue('apiRunScriptPath');
-  const compilerIds = context.getValue('compilerIds');
   const buildDir = context.getValue('buildDir');
   const initWrapperScriptPath = path.join(buildDir, 'init_wrapper_script.sh');
 
   await fs.writeFile(initWrapperScriptPath, `#!/bin/bash
-
-# Start api
-${apiRunScriptPath}
-${compilerIds
-      .map(selectCompilerContext(context))
-      .map(({ lang }) => `
+${selectAppContexts(context).map(({ lang }) => `
 # Start ${lang}
-(cd compilers/${lang} && ./run.sh) &
+./run_${lang}.sh &
 `).join('')}
 # Wait for any process to exit
 wait -n
@@ -106,6 +108,7 @@ wait -n
 # Exit with status of process that exited first
 exit $?
 `);
+  await fs.chmod(initWrapperScriptPath, 0o775);
   context.setValue('initWrapperScriptPath', initWrapperScriptPath);
 
   // const data = await fs.readFile(initWrapperScriptPath, 'utf-8');
@@ -117,8 +120,7 @@ const createDockerfile = async (context) => {
 };
 
 const prepareWorkspace = async (context) => {
-  await createCompilerRunScripts(context);
-  await createApiRunScript(context);
+  await createAppRunScripts(context);
   await createInitWrapperScript(context);
   await createDockerfile(context);
 };
@@ -127,8 +129,8 @@ const buildContainer = async (context) => {
   const buildDir = context.getValue('buildDir');
   const dockerfilePath = path.join(buildDir, 'Dockerfile');
 
-  const compilerContexts = selectCompilerContexts(context);
-  const deps = Array.from(compilerContexts
+  const appContexts = selectAppContexts(context);
+  const deps = Array.from(appContexts
     .map(c => c.runtime.getDependencies(c))
     .reduce((prev, curr) => [...prev, ...curr], [])
     .reduce((deps, dep) => deps.add(dep), new Set())
@@ -141,14 +143,16 @@ WORKDIR /usr/src/monolith
 
 RUN apk add --no-cache bash ${deps.join(' ')}
 
-${compilerContexts.map(compilerContext => `
+${appContexts.map(compilerContext => `
 # Build ${compilerContext.lang}
 ${compilerContext.runtime.getDockerfileCommands(compilerContext)}
 `).join('')}
 
-${compilerContexts.map(({ lang }) => `COPY compilers/${lang}/run.sh compilers/${lang}/run.sh`).join('\n')}
+${appContexts.map(({ lang }) => `COPY run_${lang}.sh ./`).join('\n')}
 COPY init_wrapper_script.sh ./
-CMD ["bash", "init_wrapper_script.sh"]
+
+EXPOSE 8080
+CMD ./init_wrapper_script.sh
 `);
 
   // const data = await fs.readFile(dockerfilePath, 'utf-8');
@@ -156,10 +160,11 @@ CMD ["bash", "init_wrapper_script.sh"]
 
   await new Promise((resolve, reject) => {
     const proc = exec("docker build -t monolith .", { cwd: buildDir });
+    let stderr = '';
+    proc.stderr.on('data', chunk => stderr += chunk.toString());
     proc.on('exit', (code, signal) => {
-      console.log(code, signal);
       if (code !== 0) {
-        reject(new Error(`docker ubild failed with exit code${code}`));
+        reject(new Error(`docker build failed with exit code: ${code}\n${stderr}`));
       } else {
         resolve();
       }
@@ -190,7 +195,7 @@ const createMonolithContainer = async (argv) => {
   }
 
   try {
-    await fetchSources(context);
+    await fetchAppSources(context);
     context.setValue('fetch', true);
 
     await prepareWorkspace(context);

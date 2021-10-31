@@ -3,17 +3,30 @@ const buildGetNodeDependencies = context => compilerContext => {
   return ['nodejs', 'npm', ...deps];
 }
 
-const buildGetNodeCommmand = context => compilerContext => {
-  let { cmd, args } = compilerContext;
+const buildGetNodeCommmand = context => appContext => {
+  let { lang, cmd, args, env } = appContext;
+  const environment = Object.keys(env)
+    .reduce((prev, key, index) => prev + `${index > 0 ? '\n' : ''}export ${key}=${env[key]}`, '');
   if (!cmd) {
     cmd = 'node';
   }
-  return [cmd, ...args].join(' ');
+  if (args.length <= 0) {
+    args = ['.'];
+  }
+  const command = [cmd, ...args].join(' ');
+  return `
+cd apps/${lang}
+
+# Environment
+${environment}
+
+# Run ${lang}
+${command}`;
 }
 
 const buildGetNodeDockerfileCommands = context => compilerContext => {
   const { lang } = compilerContext;
-  const prefix = `./compilers/${lang}`;
+  const prefix = `./apps/${lang}`;
   return `COPY ${prefix}/package*.json ${prefix}/
 RUN npm --prefix=${prefix} install
 COPY ${prefix} ${prefix}

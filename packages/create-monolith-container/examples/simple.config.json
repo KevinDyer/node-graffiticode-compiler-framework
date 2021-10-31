@@ -2,10 +2,12 @@
   "compilers": {
     "L0": {
       "repoUrl": "https://github.com/artcompiler/l0",
-      "runtime": "nodejs",
       "args": [
         "app.js"
       ]
+    },
+    "L113": {
+      "repoUrl": "https://github.com/artcompiler/l113"
     }
   }
 }

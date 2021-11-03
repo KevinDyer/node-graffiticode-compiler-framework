@@ -1,5 +1,5 @@
-const buildGetNodeDependencies = context => compilerContext => {
-  const { deps } = compilerContext;
+const buildGetNodeDependencies = context => appContext => {
+  const { deps } = appContext;
   return ['nodejs', 'npm', ...deps];
 }
 
@@ -22,10 +22,10 @@ ${environment}
 
 # Run ${lang}
 ${command}`;
-}
+};
 
-const buildGetNodeDockerfileCommands = context => compilerContext => {
-  const { lang } = compilerContext;
+const buildGetNodeDockerfileCommands = context => appContext => {
+  const { lang } = appContext;
   const prefix = `./apps/${lang}`;
   return `COPY ${prefix}/package*.json ${prefix}/
 RUN npm --prefix=${prefix} install
@@ -35,16 +35,8 @@ RUN npm --prefix=${prefix} ci --production
 `;
 };
 
-const createNodeRuntime = context => ({
+exports.createNodeRuntime = context => ({
   getCommand: buildGetNodeCommmand(context),
   getDependencies: buildGetNodeDependencies(context),
   getDockerfileCommands: buildGetNodeDockerfileCommands(context),
 });
-
-exports.makeRuntimeFactory = context => runtime => {
-  if (runtime === 'nodejs') {
-    return createNodeRuntime(context);
-  } else {
-    throw new Error(`Unknown runtime: "${runtime}"`)
-  }
-};

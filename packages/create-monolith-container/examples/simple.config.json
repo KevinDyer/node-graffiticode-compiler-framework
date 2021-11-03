@@ -8,6 +8,25 @@
     },
     "L113": {
       "repoUrl": "https://github.com/artcompiler/l113"
+    },
+    "sympy": {
+      "repoUrl": "https://github.com/KevinDyer/sympy-service",
+      "runtime": "python",
+      "args": [
+        "-m",
+        "flask",
+        "run",
+        "-h",
+        "0.0.0.0",
+        "-p",
+        "$PORT"
+      ],
+      "env": {
+        "FLASK_APP": "flask_app"
+      },
+      "deps": [
+        "git"
+      ]
     }
   }
 }

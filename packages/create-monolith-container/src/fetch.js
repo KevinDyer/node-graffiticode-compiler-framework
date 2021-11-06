@@ -12,7 +12,7 @@ const fetchAppSource = context => async (appContext) => {
   appContext.localPath = path.join(appsDir, lang);
 };
 
-exports.fetchAppSources = async (context) => {
+exports.fetch = async (context) => {
   await Promise.all(selectAppContexts(context)
     .map(fetchAppSource(context)));
 };

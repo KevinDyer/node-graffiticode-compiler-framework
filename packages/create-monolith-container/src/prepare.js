@@ -79,7 +79,7 @@ CMD ./init_wrapper_script.sh
   // console.log(data);
 };
 
-exports.prepareWorkspace = async (context) => {
+exports.prepare = async (context) => {
   await createAppRunScripts(context);
   await createInitWrapperScript(context);
   await createDockerfile(context);

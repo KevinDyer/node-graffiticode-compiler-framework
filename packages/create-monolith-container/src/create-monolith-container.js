@@ -1,9 +1,9 @@
-const { buildContainer } = require('./build');
+const { build } = require('./build');
 const { getConfig } = require('./config');
 const { createContext } = require('./context');
-const { fetchAppSources } = require('./fetch');
+const { fetch } = require('./fetch');
 const { setup, teardown } = require('./lifecycle');
-const { prepareWorkspace } = require('./prepare');
+const { prepare } = require('./prepare');
 
 const createMonolithContainer = async (argv) => {
   let context;
@@ -17,13 +17,13 @@ const createMonolithContainer = async (argv) => {
   }
 
   try {
-    await fetchAppSources(context);
+    await fetch(context);
     context.setValue('fetch', true);
 
-    await prepareWorkspace(context);
-    context.setValue('create', true);
+    await prepare(context);
+    context.setValue('prepare', true);
 
-    await buildContainer(context);
+    await build(context);
     context.setValue('build', true);
   } catch (err) {
     console.warn(`Failed to create monolith container: ${err.message}\n${err.stack}`);

@@ -1,6 +1,6 @@
 const { exec } = require('child_process');
 
-exports.buildContainer = async (context) => {
+exports.build = async (context) => {
   const buildDir = context.getValue('buildDir');
 
   await new Promise((resolve, reject) => {

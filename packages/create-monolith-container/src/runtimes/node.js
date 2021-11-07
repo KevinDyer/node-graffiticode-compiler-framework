@@ -4,9 +4,7 @@ const buildGetNodeDependencies = context => appContext => {
 }
 
 const buildGetNodeCommmand = context => appContext => {
-  let { lang, cmd, args, env } = appContext;
-  const environment = Object.keys(env)
-    .reduce((prev, key, index) => prev + `${index > 0 ? '\n' : ''}export ${key}=${env[key]}`, '');
+  let { cmd, args } = appContext;
   if (!cmd) {
     cmd = 'node';
   }
@@ -14,14 +12,7 @@ const buildGetNodeCommmand = context => appContext => {
     args = ['.'];
   }
   const command = [cmd, ...args].join(' ');
-  return `
-cd apps/${lang}
-
-# Environment
-${environment}
-
-# Run ${lang}
-${command}`;
+  return command;
 };
 
 const buildGetNodeDockerfileCommands = context => appContext => {

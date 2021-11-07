@@ -4,9 +4,7 @@ const buildGetPythonDependencies = context => appContext => {
 }
 
 const buildGetPythonCommmand = context => appContext => {
-  let { lang, cmd, args, env } = appContext;
-  const environment = Object.keys(env)
-    .reduce((prev, key, index) => prev + `${index > 0 ? '\n' : ''}export ${key}=${env[key]}`, '');
+  let { cmd, args } = appContext;
   if (!cmd) {
     cmd = 'python3';
   }
@@ -14,14 +12,7 @@ const buildGetPythonCommmand = context => appContext => {
     args = ['app.py'];
   }
   const command = [cmd, ...args].join(' ');
-  return `
-cd apps/${lang}
-
-# Environment
-${environment}
-
-# Run ${lang}
-${command}`;
+  return command;
 };
 
 const buildGetPythonDockerfileCommands = context => appContext => {

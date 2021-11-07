@@ -5,9 +5,22 @@ const { selectAppContexts } = require('./utils');
 
 const createAppRunScript = context => async (appContext) => {
   const buildDir = context.getValue('buildDir');
-  const { lang, runtime } = appContext;
+  const { lang, env, runtime } = appContext;
+
+  const environment = Object.keys(env)
+    .reduce((prev, key, index) =>
+      prev + `${index > 0 ? '\n' : ''}export ${key}=${env[key]}`, '');
+
   const runScriptPath = path.join(buildDir, `run_${lang}.sh`);
   await fs.writeFile(runScriptPath, `#!/bin/bash
+
+# Change to app directory
+cd apps/${lang}
+
+# Setup environment
+${environment}
+
+# Run application ${lang}
 ${runtime.getCommand(appContext)}
 `);
   await fs.chmod(runScriptPath, 0o775);

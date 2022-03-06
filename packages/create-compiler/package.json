@@ -1,6 +1,6 @@
 {
   "name": "@graffiticode/create-compiler",
-  "version": "0.1.9",
+  "version": "0.1.14",
   "description": "A CLI to create a new graffiticode compiler",
   "main": "src/index.js",
   "bin": {

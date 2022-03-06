@@ -1,8 +1,8 @@
 const { diag, DiagConsoleLogger, DiagLogLevel } = require('@opentelemetry/api');
-const { NodeTracerProvider } = require('@opentelemetry/node');
+const { NodeTracerProvider } = require('@opentelemetry/sdk-trace-node');
 const { Resource } = require('@opentelemetry/resources');
 const { ResourceAttributes } = require('@opentelemetry/semantic-conventions');
-const { BatchSpanProcessor } = require('@opentelemetry/tracing');
+const { BatchSpanProcessor } = require('@opentelemetry/sdk-trace-base');
 const { registerInstrumentations } = require('@opentelemetry/instrumentation');
 const { HttpInstrumentation } = require('@opentelemetry/instrumentation-http');
 const { GrpcInstrumentation } = require('@opentelemetry/instrumentation-grpc');

@@ -1,6 +1,6 @@
 const { TraceExporter } = require('@google-cloud/opentelemetry-cloud-trace-exporter');
 const { ZipkinExporter } = require('@opentelemetry/exporter-zipkin');
-const { ConsoleSpanExporter } = require('@opentelemetry/tracing');
+const { ConsoleSpanExporter } = require('@opentelemetry/sdk-trace-base');
 
 exports.createSpanExporter = () => {
   if (process.env.OTEL_SPAN_EXPORTER === 'zipkin') {

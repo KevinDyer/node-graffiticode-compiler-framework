@@ -1,12 +1,13 @@
 const { diag, DiagConsoleLogger, DiagLogLevel } = require('@opentelemetry/api');
-const { NodeTracerProvider } = require('@opentelemetry/sdk-trace-node');
-const { Resource } = require('@opentelemetry/resources');
-const { ResourceAttributes } = require('@opentelemetry/semantic-conventions');
-const { BatchSpanProcessor } = require('@opentelemetry/sdk-trace-base');
+const { getNodeAutoInstrumentations } = require("@opentelemetry/auto-instrumentations-node");
 const { registerInstrumentations } = require('@opentelemetry/instrumentation');
 const { HttpInstrumentation } = require('@opentelemetry/instrumentation-http');
 const { GrpcInstrumentation } = require('@opentelemetry/instrumentation-grpc');
 const { PgInstrumentation } = require('@opentelemetry/instrumentation-pg');
+const { Resource } = require('@opentelemetry/resources');
+const { BatchSpanProcessor } = require('@opentelemetry/sdk-trace-base');
+const { NodeTracerProvider } = require('@opentelemetry/sdk-trace-node');
+const { ResourceAttributes } = require('@opentelemetry/semantic-conventions');
 const { v4 } = require('uuid');
 
 const { createSpanExporter } = require('./span-exporter');
@@ -40,6 +41,7 @@ const setupOpenTelemetry = () => {
 
   registerInstrumentations({
     instrumentations: [
+      getNodeAutoInstrumentations(),
       new HttpInstrumentation(),
       new GrpcInstrumentation(),
       new PgInstrumentation(),

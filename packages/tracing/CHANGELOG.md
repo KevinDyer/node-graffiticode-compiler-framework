@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0](https://github.com/KevinDyer/node-graffiticode-compiler-framework/compare/v0.1.15...v0.2.0) (2022-05-23)
+
+
+### Features
+
+* add nodejs auto instrumentations ([9633954](https://github.com/KevinDyer/node-graffiticode-compiler-framework/commit/96339545051b24eba8a0f6693d2e085d7bacf21d))
+
+
+
+
+
 ## [0.1.15](https://github.com/KevinDyer/node-graffiticode-compiler-framework/compare/v0.1.14...v0.1.15) (2022-03-06)
 
 **Note:** Version bump only for package @graffiticode/tracing

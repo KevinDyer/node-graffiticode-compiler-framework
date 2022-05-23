@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0](https://github.com/KevinDyer/node-graffiticode-compiler-framework/compare/v0.1.15...v0.2.0) (2022-05-23)
+
+
+### Bug Fixes
+
+* updated npm deps to fix insecure versions in create-compiler ([62fcc3f](https://github.com/KevinDyer/node-graffiticode-compiler-framework/commit/62fcc3f90f47eacdc15d66236663715fad9de3e2))
+
+
+
+
+
 ## [0.1.14](https://github.com/KevinDyer/node-graffiticode-compiler-framework/compare/v0.1.13...v0.1.14) (2022-03-06)
 
 **Note:** Version bump only for package @graffiticode/create-compiler

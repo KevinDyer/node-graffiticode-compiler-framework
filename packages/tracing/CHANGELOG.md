@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/KevinDyer/node-graffiticode-compiler-framework/compare/v0.2.0...v0.3.0) (2022-05-24)
+
+
+### Features
+
+* upgraded tracing deps and sdk creation ([b753f85](https://github.com/KevinDyer/node-graffiticode-compiler-framework/commit/b753f854af9fb4ba2bfb9e0823ac886c876a8a6f))
+
+
+
+
+
 # [0.2.0](https://github.com/KevinDyer/node-graffiticode-compiler-framework/compare/v0.1.15...v0.2.0) (2022-05-23)
 
 

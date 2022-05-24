@@ -1,6 +1,6 @@
 {
   "name": "@graffiticode/compiler-framework",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "repository": "https://github.com/kevindyer/node-graffiticode-compiler-framework.git",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",

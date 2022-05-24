@@ -1,6 +1,6 @@
 {
   "name": "@graffiticode/create-monolith-container",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A cli to create/package graffiticode languages into a single monolithic docker container",
   "author": "Kevin Dyer <kevin.m.dyer@gmail.com>",
   "homepage": "https://github.com/KevinDyer/node-graffiticode-compiler-framework#readme",

@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "main": "app.js",
+  "dependencies": {
+    "@graffiticode/tracing": "file:../..",
+    "bent": "^7.3.12",
+    "express": "^4.18.1"
+  }
+}

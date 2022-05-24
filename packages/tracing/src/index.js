@@ -1,57 +1,20 @@
 const { diag, DiagConsoleLogger, DiagLogLevel } = require('@opentelemetry/api');
 const { getNodeAutoInstrumentations } = require("@opentelemetry/auto-instrumentations-node");
-const { registerInstrumentations } = require('@opentelemetry/instrumentation');
-const { HttpInstrumentation } = require('@opentelemetry/instrumentation-http');
-const { GrpcInstrumentation } = require('@opentelemetry/instrumentation-grpc');
-const { PgInstrumentation } = require('@opentelemetry/instrumentation-pg');
-const { Resource } = require('@opentelemetry/resources');
-const { BatchSpanProcessor } = require('@opentelemetry/sdk-trace-base');
-const { NodeTracerProvider } = require('@opentelemetry/sdk-trace-node');
-const { ResourceAttributes } = require('@opentelemetry/semantic-conventions');
-const { v4 } = require('uuid');
+const opentelemetry = require('@opentelemetry/sdk-node');
 
 const { createSpanExporter } = require('./span-exporter');
 
-const isOpenTelemetryEnabled = () => (process.env.OTEL_ENABLED === 'true');
+// For troubleshooting, set the log level to DiagLogLevel.DEBUG
+diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.INFO);
 
-const getServiceName = () => {
-  const envServiceName = process.env.OTEL_SERVICE_NAME;
-  if (typeof envServiceName === 'string' && envServiceName.length > 0) {
-    return envServiceName;
-  }
-  const randomServiceName = v4();
-  console.log(`using random service name for OpenTelemetry: "${randomServiceName}"`);
-  return randomServiceName;
-};
+const sdk = new opentelemetry.NodeSDK({
+  autoDetectResources: true,
+  traceExporter: createSpanExporter(),
+  instrumentations: [getNodeAutoInstrumentations()],
+  spanProcessor: new opentelemetry.tracing.BatchSpanProcessor(
+    createSpanExporter(),
+  ),
+});
+sdk.start();
 
-const setupOpenTelemetry = () => {
-  diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.INFO);
-
-  const provider = new NodeTracerProvider({
-    resource: new Resource({
-      [ResourceAttributes.SERVICE_NAME]: getServiceName(),
-    })
-  });
-  provider.addSpanProcessor(
-    new BatchSpanProcessor(
-      createSpanExporter()
-    )
-  );
-  provider.register();
-
-  registerInstrumentations({
-    instrumentations: [
-      getNodeAutoInstrumentations(),
-      new HttpInstrumentation(),
-      new GrpcInstrumentation(),
-      new PgInstrumentation(),
-    ],
-  });
-
-  console.log('tracing initialized');
-};
-
-if (isOpenTelemetryEnabled()) {
-  setupOpenTelemetry();
-}
-
+console.log('tracing initialized');

@@ -17,16 +17,11 @@
   "license": "MIT",
   "dependencies": {
     "@google-cloud/opentelemetry-cloud-trace-exporter": "^1.1.0",
-    "@opentelemetry/api": "^1.1.0",
+    "@opentelemetry/api": "^1.0.4",
     "@opentelemetry/auto-instrumentations-node": "^0.28.0",
+    "@opentelemetry/exporter-jaeger": "^1.2.0",
     "@opentelemetry/exporter-zipkin": "^1.2.0",
-    "@opentelemetry/instrumentation-express": "^0.28.0",
-    "@opentelemetry/instrumentation-grpc": "^0.28.0",
-    "@opentelemetry/instrumentation-http": "^0.28.0",
-    "@opentelemetry/instrumentation-pg": "^0.28.0",
-    "@opentelemetry/sdk-trace-base": "^1.2.0",
-    "@opentelemetry/sdk-trace-node": "^1.2.0",
-    "uuid": "^8.3.2"
+    "@opentelemetry/sdk-node": "^0.28.0"
   },
   "devDependencies": {
     "jest": "^27.3.1"
